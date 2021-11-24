@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.query.UpdateDefinition;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -27,17 +28,16 @@ public class MongoPracticeWithoutSpring {
 
         mongoOps.insertAll(List.of(new Person("Sainath", 24), new Person("Priyanka", 38)));
 
-        List<Person> personList = mongoOps.findAll(Person.class);
+        Person obj1 = mongoOps.findOne(query(where("name").is("Sainath")), Person.class);
 
-        List<Person> personList1 = mongoOps.find(query(where("age").lt(28)), Person.class);
+        Person obj2 = mongoOps.findOne(query(where("name").is("Sainath")), Person.class);
 
-        log.info("person list : " + personList);
+        obj2.setName("Sai");
 
-        mongoOps.update(Person.class)
-                .matching(Query.query(where("name").is("Swati")))
-                .apply(Update.update("name", "Swati Patil"));
-//                .
-
+        mongoOps.save(obj2);
+        mongoOps.query(Person.class)
+                .matching(where("").is(""));
+        mongoOps.save(obj1);
 
         mongoOps.dropCollection("person");
     }
