@@ -1,22 +1,9 @@
 package com.goudscode.practice;
 
-import com.goudscode.documents.Person;
-import com.mongodb.client.MongoClients;
-import lombok.extern.slf4j.Slf4j;
+import com.mongodb.client.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
-
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
+import org.bson.Document;
 
 public class MongoPracticeWithoutSpring {
 
@@ -24,21 +11,14 @@ public class MongoPracticeWithoutSpring {
 
     public static void main(String[] args) {
 
-        MongoOperations mongoOps = new MongoTemplate(MongoClients.create(), "mongo_practice");
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase moviesDB = mongoClient.getDatabase("movies");
+        MongoCollection<Document> moviesInfoCollection = moviesDB.getCollection("moviesInfo");
 
-        mongoOps.insertAll(List.of(new Person("Sainath", 24), new Person("Priyanka", 38)));
+        FindIterable<Document> documents = moviesInfoCollection.find();
 
-        Person obj1 = mongoOps.findOne(query(where("name").is("Sainath")), Person.class);
+        for (Document d : documents)
+            System.out.println(d.toJson());
 
-        Person obj2 = mongoOps.findOne(query(where("name").is("Sainath")), Person.class);
-
-        obj2.setName("Sai");
-
-        mongoOps.save(obj2);
-        mongoOps.query(Person.class)
-                .matching(where("").is(""));
-        mongoOps.save(obj1);
-
-        mongoOps.dropCollection("person");
     }
 }
